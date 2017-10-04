@@ -30,13 +30,13 @@ const logMessage = ({ time, from, message }) =>
 
 const putteSocket = io(putteServer)
 
-const putteMessageStream = M.fromEvent('message', putteSocket)
+const putteMessage$ = M.fromEvent('message', putteSocket)
 
 //////////////////////////////////////////////////////
 // History
 //
 
-const putteHistoryStream = M.fromPromise(
+const putteHistory$ = M.fromPromise(
   fetch(latestPutteHistory)
     .then(resToJson)
     .then(reverse)
@@ -49,6 +49,6 @@ const putteHistoryStream = M.fromPromise(
 putteSocket.on('connect', () => console.log('\n< putte connected >'))
 putteSocket.on('disconnect', () => console.log('\n< putte disconnected >'))
 
-const mainStream = M.concat(putteHistoryStream, putteMessageStream)
+const main$ = M.concat(putteHistory$, putteMessage$)
 
-mainStream.observe(logMessage).catch(console.error)
+main$.observe(logMessage).catch(console.error)
